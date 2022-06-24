@@ -12,6 +12,7 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -54,6 +55,7 @@ public class WalletServiceImpl implements IWalletService{
         return iWalletRepository.deleteById(id);
     }
 
+    @Cacheable(value = "walletCache")
     @Override
     public Mono<Wallet> findById(String id) {
         return iWalletRepository.findById(id);
@@ -64,6 +66,7 @@ public class WalletServiceImpl implements IWalletService{
         return iWalletRepository.findAll();
     }
 
+    @Cacheable(value = "transactionWalletCache")
     @Override
     public Mono<TransactionWallet> transactionWallet(TransactionWalletRequest transactionWalletRequest) {
         return iWalletRepository.findByPhone(transactionWalletRequest.getPhoneSource())
