@@ -8,6 +8,7 @@ import com.nttdata.bc19.mswallet.repository.IWalletRepository;
 import com.nttdata.bc19.mswallet.request.TransactionWalletRequest;
 import com.nttdata.bc19.mswallet.request.WalletRequest;
 import com.nttdata.bc19.mswallet.service.IWalletService;
+import com.nttdata.bc19.mswallet.util.LogMessage;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +19,14 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.function.Consumer;
 
 @Service
 public class WalletServiceImpl implements IWalletService{
 
     private final Logger LOGGER = LoggerFactory.getLogger("WalletLog");
+
+    private final String TRANSACTIONSAVESUCCESS = "SAVESUCCESS";
 
     @Autowired
     IWalletRepository iWalletRepository;
@@ -93,10 +97,19 @@ public class WalletServiceImpl implements IWalletService{
                                                                 transactionWallet.setCreatedAt(LocalDateTime.now());
                                                                 transactionWallet.setPhoneSource(transactionWalletRequest.getPhoneSource());
                                                                 transactionWallet.setPhoneDestiny(transactionWalletRequest.getPhoneDestiny());
-                                                                return iTransactionWalletRepository.save(transactionWallet);
+                                                                return iTransactionWalletRepository.save(transactionWallet).doOnSuccess(this.doOnSucess(TRANSACTIONSAVESUCCESS));
                                                             });
                                                 });
                                     });
                         });
+    }
+
+    private Consumer<TransactionWallet> doOnSucess(String idLogMessage){
+        return new Consumer<TransactionWallet>() {
+            @Override
+            public void accept(TransactionWallet personClient) {
+                LOGGER.info(LogMessage.logMessage.get(idLogMessage));
+            }
+        };
     }
 }
