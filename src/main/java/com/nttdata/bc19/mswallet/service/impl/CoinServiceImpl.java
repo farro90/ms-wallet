@@ -2,10 +2,12 @@ package com.nttdata.bc19.mswallet.service.impl;
 
 import com.nttdata.bc19.mswallet.exception.ModelNotFoundException;
 import com.nttdata.bc19.mswallet.model.*;
+import com.nttdata.bc19.mswallet.producer.KafkaStringProducer;
 import com.nttdata.bc19.mswallet.repository.*;
 import com.nttdata.bc19.mswallet.request.*;
 import com.nttdata.bc19.mswallet.service.ICoinService;
 import com.nttdata.bc19.mswallet.service.IWalletService;
+import com.nttdata.bc19.mswallet.util.LogMessage;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +17,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.function.Consumer;
 
 @Service
 public class CoinServiceImpl implements ICoinService {
@@ -41,6 +44,13 @@ public class CoinServiceImpl implements ICoinService {
     @Autowired
     IWalletService walletService;
 
+    private final KafkaStringProducer kafkaStringProducer;
+
+    public CoinServiceImpl(KafkaStringProducer kafkaStringProducer) {
+        this.kafkaStringProducer = kafkaStringProducer;
+    }
+
+
     @Override
     public Mono<ClientCoin> create(CoinRequest coinRequest) {
         return iWalletRepository.findByPhone(coinRequest.getPhone())
@@ -54,8 +64,10 @@ public class CoinServiceImpl implements ICoinService {
                     clientCoin.setPhone(coinRequest.getPhone());
                     clientCoin.setEmail(coinRequest.getEmail());
                     clientCoin.setCoins(0);
+                    this.kafkaStringProducer.sendMessage("Client count created");
                     return iCoinRepository.save(clientCoin);
                 });
+
     }
 
     @Override
