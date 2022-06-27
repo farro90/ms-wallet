@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@RestController
+@RequestMapping("/api/wallet")
 public class WalletApi {
     @Autowired
     private IWalletService walletService;
@@ -33,7 +35,7 @@ public class WalletApi {
         return walletService.deleteById(id);
     }
 
-    @PostMapping("/transaction-wallet")
+    @PostMapping("/transaction")
     public Mono<TransactionWallet> transactionWallet(@RequestBody TransactionWalletRequest transactionWalletRequest){
         return walletService.transactionWallet(transactionWalletRequest);
     }

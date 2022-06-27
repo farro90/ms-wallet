@@ -4,13 +4,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.math.BigDecimal;
-
 @Data
 @Document
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TransactionWallet extends BaseModel {
-    private String phoneSource;
-    private String phoneDestiny;
-    private double amount;
+public class ClientCoin extends BaseModel{
+    private DocumentType documentType;
+    private String documentNumber;
+    private String phone;
+    private String email;
+    private double coins;
 }

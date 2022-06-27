@@ -9,8 +9,9 @@ import java.math.BigDecimal;
 @Data
 @Document
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TransactionWallet extends BaseModel {
+public class TransactionWalletCoin extends BaseModel {
     private String phoneSource;
     private String phoneDestiny;
-    private double amount;
+    private double amountSource;
+    private double amountDestiny;
 }
